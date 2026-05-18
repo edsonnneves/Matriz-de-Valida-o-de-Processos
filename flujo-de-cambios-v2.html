@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matriz de Validación de Cambios — MercadoLibre</title>
+<style>
+  :root {
+    --yellow: #FFE600;
+    --yellow-dark: #F0D800;
+    --blue: #3483FA;
+    --blue-dark: #2968C8;
+    --green: #00A650;
+    --red: #E53935;
+    --orange: #F57C00;
+    --gray-50: #F7F8FA;
+    --gray-100: #EAEDF2;
+    --gray-200: #D6DCE8;
+    --gray-500: #8A94A6;
+    --gray-700: #4A5568;
+    --gray-900: #1A202C;
+    --white: #FFFFFF;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--yellow);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-brand { display: flex; align-items: center; gap: 12px; }
+
+  .header-logo {
+    width: 36px; height: 36px;
+    background: var(--blue);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 900; color: var(--white); letter-spacing: -1px;
+  }
+
+  .header-title { font-size: 16px; font-weight: 700; color: var(--gray-900); line-height: 1.2; }
+  .header-subtitle { font-size: 11px; color: var(--gray-700); font-weight: 400; }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+
+  .header-badge {
+    background: var(--blue); color: white;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+  }
+
+  .btn-directory {
+    background: var(--gray-900); color: white;
+    font-size: 12px; font-weight: 600;
+    padding: 6px 14px; border-radius: 20px;
+    border: none; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: background 0.15s;
+  }
+  .btn-directory:hover { background: var(--gray-700); }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+    color: white; padding: 40px 32px 32px; text-align: center;
+  }
+  .hero h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .hero p { font-size: 15px; opacity: 0.85; max-width: 600px; margin: 0 auto 28px; line-height: 1.6; }
+
+  .search-wrapper { position: relative; max-width: 560px; margin: 0 auto; }
+  .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 18px; opacity: 0.5; }
+
+  #search {
+    width: 100%; padding: 14px 16px 14px 46px;
+    border: none; border-radius: var(--radius);
+    font-size: 15px; background: rgba(255,255,255,0.97);
+    color: var(--gray-900); box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    outline: none; transition: box-shadow 0.2s;
+  }
+  #search:focus { box-shadow: 0 4px 24px rgba(0,0,0,0.35), 0 0 0 3px rgba(255,255,255,0.4); }
+  #search::placeholder { color: var(--gray-500); }
+
+  /* ── STATS ── */
+  .stats-bar {
+    background: white; border-bottom: 1px solid var(--gray-100);
+    padding: 16px 32px; display: flex; gap: 32px;
+    align-items: center; justify-content: center; flex-wrap: wrap;
+  }
+  .stat { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .stat-num { font-size: 22px; font-weight: 800; color: var(--blue); }
+  .stat-label { color: var(--gray-500); font-weight: 500; }
+
+  /* ── FILTERS ── */
+  .controls { padding: 20px 32px 8px; max-width: 1400px; margin: 0 auto; }
+  .controls-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .filter-label { font-size: 12px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--gray-200);
+    background: white; font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: all 0.15s; color: var(--gray-700); user-select: none;
+  }
+  .chip:hover { border-color: var(--blue); color: var(--blue); }
+  .chip.active { background: var(--blue); border-color: var(--blue); color: white; }
+  .chip-stakeholder.active { background: var(--green); border-color: var(--green); color: white; }
+
+  /* ── TIPO DROPDOWN ── */
+  .tipo-dropdown { position: relative; min-width: 260px; }
+  .tipo-trigger {
+    display: flex; align-items: center; gap: 10px; padding: 7px 14px;
+    border-radius: 20px; border: 1.5px solid var(--gray-200); background: white;
+    font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+    color: var(--gray-700); user-select: none; white-space: nowrap;
+  }
+  .tipo-trigger:hover { border-color: #6B21A8; color: #6B21A8; }
+  .tipo-trigger.open, .tipo-trigger.has-value { background: #6B21A8; border-color: #6B21A8; color: white; }
+  .tipo-trigger-icon { font-size: 16px; line-height: 1; }
+  .tipo-trigger-label { flex: 1; }
+  .tipo-chevron { font-size: 10px; transition: transform 0.2s; opacity: 0.7; }
+  .tipo-trigger.open .tipo-chevron { transform: rotate(180deg); }
+  .tipo-panel {
+    display: none; position: absolute; top: calc(100% + 6px); left: 0;
+    background: white; border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+    box-shadow: var(--shadow-lg); z-index: 200; width: 300px; overflow: hidden;
+  }
+  .tipo-panel.open { display: block; animation: dropIn 0.15s ease; }
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .tipo-panel-search { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); position: sticky; top: 0; background: white; z-index: 1; }
+  .tipo-panel-search input {
+    width: 100%; border: 1.5px solid var(--gray-200); border-radius: var(--radius-xs);
+    padding: 6px 10px; font-size: 12.5px; outline: none; color: var(--gray-900); transition: border-color 0.15s;
+  }
+  .tipo-panel-search input:focus { border-color: #6B21A8; }
+  .tipo-list { max-height: 300px; overflow-y: auto; padding: 6px 0; }
+  .tipo-list::-webkit-scrollbar { width: 4px; }
+  .tipo-list::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
+  .tipo-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 14px;
+    cursor: pointer; font-size: 13px; color: var(--gray-700); transition: background 0.1s;
+  }
+  .tipo-item:hover { background: var(--gray-50); color: #6B21A8; }
+  .tipo-item.active { background: #F3E8FF; color: #6B21A8; font-weight: 600; }
+  .tipo-item-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .tipo-item-text { flex: 1; line-height: 1.3; }
+  .tipo-item-check { font-size: 12px; color: #6B21A8; opacity: 0; }
+  .tipo-item.active .tipo-item-check { opacity: 1; }
+  .tipo-item.hidden { display: none; }
+  .tipo-no-results { padding: 16px 14px; text-align: center; font-size: 12.5px; color: var(--gray-500); font-style: italic; display: none; }
+
+  .results-info { font-size: 13px; color: var(--gray-500); padding: 0 32px 12px; max-width: 1400px; margin: 0 auto; }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px; padding: 8px 32px 40px; max-width: 1400px; margin: 0 auto;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: white; border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); border: 1.5px solid var(--gray-100);
+    overflow: hidden; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; cursor: pointer;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--blue); }
+  .card-header { padding: 16px 18px 12px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: flex-start; gap: 12px; }
+  .card-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .card-title-wrap { flex: 1; }
+  .card-title { font-size: 15px; font-weight: 700; color: var(--gray-900); line-height: 1.3; margin-bottom: 5px; }
+  .card-team { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .team-PD { background: #EBF3FF; color: var(--blue-dark); }
+  .team-MTM { background: #FFF3E0; color: #E65100; }
+  .card-body { padding: 14px 18px 16px; }
+  .criteria { font-size: 12.5px; color: var(--gray-500); line-height: 1.55; margin-bottom: 14px; font-style: italic; }
+  .section-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 7px; display: flex; align-items: center; gap: 5px; }
+  .section-mandatory .section-label { color: var(--red); }
+  .section-informed .section-label { color: var(--blue); }
+  .section-informed { margin-top: 10px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .badge-mandatory { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
+  .badge-informed { background: #E3F2FD; color: #1565C0; border: 1px solid #BBDEFB; }
+  .badge-none { background: var(--gray-100); color: var(--gray-500); font-style: italic; font-weight: 400; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    z-index: 500; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white; border-radius: 16px; max-width: 600px; width: 100%;
+    max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg);
+    animation: modalIn 0.2s ease; position: relative;
+  }
+  @keyframes modalIn {
+    from { transform: scale(0.94) translateY(10px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  .modal-header { padding: 24px 24px 18px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: flex-start; gap: 14px; }
+  .modal-icon { width: 52px; height: 52px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .modal-title { font-size: 20px; font-weight: 800; color: var(--gray-900); margin-bottom: 6px; }
+  .modal-close {
+    position: absolute; top: 20px; right: 20px;
+    background: var(--gray-100); border: none; border-radius: 50%;
+    width: 32px; height: 32px; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray-700); transition: background 0.15s;
+  }
+  .modal-close:hover { background: var(--gray-200); }
+  .modal-body { padding: 20px 24px 28px; }
+  .modal-section { margin-bottom: 20px; }
+  .modal-section:last-child { margin-bottom: 0; }
+  .modal-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .criteria-box { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13.5px; line-height: 1.6; color: var(--gray-700); }
+  .modal-divider { height: 1px; background: var(--gray-100); margin: 18px 0; }
+  .info-alert { background: #FFF8E1; border: 1px solid #FFECB3; border-radius: var(--radius-sm); padding: 12px 14px; font-size: 12.5px; color: #6D4C41; line-height: 1.55; display: flex; gap: 8px; align-items: flex-start; }
+
+  /* ── STAKEHOLDER SECTION IN MODAL ── */
+  .stakeholder-group { margin-bottom: 14px; }
+  .stakeholder-area-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 8px; padding: 4px 10px;
+    border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .stakeholder-area-label.mandatory { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
+  .stakeholder-area-label.informed { background: #E3F2FD; color: #1565C0; border: 1px solid #BBDEFB; }
+
+  .responsible-cards { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+
+  .responsible-card {
+    background: white; border: 1.5px solid var(--gray-100); border-radius: 10px;
+    padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+    min-width: 200px; flex: 1; transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .responsible-card:hover { border-color: var(--blue); box-shadow: 0 2px 8px rgba(52,131,250,0.12); }
+
+  .responsible-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px; color: white; flex-shrink: 0;
+  }
+
+  .responsible-info { flex: 1; min-width: 0; }
+  .responsible-name { font-size: 13px; font-weight: 700; color: var(--gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .responsible-role { font-size: 11px; color: var(--gray-500); margin-top: 1px; }
+  .responsible-site {
+    font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px;
+    background: var(--gray-100); color: var(--gray-700); white-space: nowrap; margin-top: 3px; display: inline-block;
+  }
+
+  .placeholder-card {
+    background: var(--gray-50); border: 1.5px dashed var(--gray-200); border-radius: 10px;
+    padding: 10px 14px; display: flex; align-items: center; gap: 8px;
+    color: var(--gray-500); font-size: 12px; font-style: italic; flex: 1; min-width: 200px;
+  }
+
+  /* ── DIRECTORY MODAL ── */
+  .dir-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    z-index: 600; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+  }
+  .dir-overlay.open { display: flex; }
+  .dir-modal {
+    background: white; border-radius: 16px; max-width: 720px; width: 100%;
+    max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg);
+    animation: modalIn 0.2s ease; position: relative;
+  }
+  .dir-header {
+    padding: 24px 24px 16px; border-bottom: 1px solid var(--gray-100);
+    display: flex; align-items: center; gap: 14px; position: sticky; top: 0; background: white; z-index: 10;
+  }
+  .dir-header-icon { font-size: 28px; }
+  .dir-header-title { font-size: 18px; font-weight: 800; color: var(--gray-900); }
+  .dir-header-sub { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+  .dir-body { padding: 20px 24px 28px; }
+  .dir-area { margin-bottom: 24px; }
+  .dir-area-title {
+    font-size: 13px; font-weight: 700; color: var(--gray-900);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--gray-100);
+  }
+  .dir-area-icon { font-size: 18px; }
+  .dir-people { display: flex; flex-wrap: wrap; gap: 10px; }
+  .dir-person-card {
+    background: var(--gray-50); border: 1.5px solid var(--gray-100); border-radius: 10px;
+    padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+    flex: 1; min-width: 220px;
+  }
+  .dir-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: white; flex-shrink: 0; }
+  .dir-info { flex: 1; }
+  .dir-name { font-size: 14px; font-weight: 700; color: var(--gray-900); }
+  .dir-role { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+  .dir-site { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: var(--blue); color: white; display: inline-block; margin-top: 4px; }
+  .dir-empty { font-size: 12px; color: var(--gray-500); font-style: italic; padding: 10px 0; }
+
+  .dir-tip {
+    background: #EBF3FF; border: 1px solid #BBDEFB; border-radius: 10px;
+    padding: 14px 16px; font-size: 12.5px; color: #1565C0; margin-bottom: 20px;
+    display: flex; gap: 10px; align-items: flex-start; line-height: 1.5;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty { display: none; text-align: center; padding: 60px 20px; color: var(--gray-500); grid-column: 1 / -1; }
+  .empty.show { display: block; }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; color: var(--gray-700); }
+
+  /* ── FOOTER ── */
+  footer { background: var(--gray-900); color: var(--gray-500); text-align: center; padding: 20px; font-size: 12px; }
+  footer strong { color: var(--gray-200); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header { padding: 0 16px; }
+    .hero { padding: 28px 16px 24px; }
+    .hero h1 { font-size: 22px; }
+    .controls, .grid, .results-info { padding-left: 16px; padding-right: 16px; }
+    .grid { grid-template-columns: 1fr; }
+    .stats-bar { gap: 20px; padding: 12px 16px; }
+    .btn-directory span { display: none; }
+    .dir-people { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-brand">
+    <div class="header-logo">ML</div>
+    <div>
+      <div class="header-title">Matriz de Validación de Cambios</div>
+      <div class="header-subtitle">Flujo de Cambios Operacionales</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn-directory" onclick="openDirectory()">👥 <span>Directorio de Responsables</span></button>
+    <span class="header-badge">Operaciones</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>¿Qué tipo de cambio necesitas hacer?</h1>
+  <p>Busca el tipo de cambio para identificar cuáles equipos deben ser accionados y quiénes son los responsables antes de cualquier aprobación de ejecución.</p>
+  <div class="search-wrapper">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search" placeholder="Buscar por tipo de cambio, equipo o stakeholder..." autocomplete="off">
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num" id="stat-total">27</span><span class="stat-label">tipos de cambio</span></div>
+  <div class="stat"><span class="stat-num" id="stat-visible">27</span><span class="stat-label">mostrados</span></div>
+  <div class="stat"><span class="stat-num">9</span><span class="stat-label">equipos stakeholders</span></div>
+  <div class="stat"><span class="stat-num">2</span><span class="stat-label">equipos gestores</span></div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="controls-row">
+    <span class="filter-label">Equipo gestor:</span>
+    <div class="chips" id="chips-team">
+      <span class="chip active" data-team="all">Todos</span>
+      <span class="chip" data-team="PD">PD</span>
+      <span class="chip" data-team="MTM">MTM</span>
+    </div>
+  </div>
+  <div class="controls-row">
+    <span class="filter-label">Stakeholder:</span>
+    <div class="chips" id="chips-stakeholder">
+      <span class="chip chip-stakeholder active" data-stakeholder="all">Todos</span>
+      <span class="chip chip-stakeholder" data-stakeholder="SHE/Safety">SHE/Safety</span>
+      <span class="chip chip-stakeholder" data-stakeholder="ICQA">ICQA</span>
+      <span class="chip chip-stakeholder" data-stakeholder="Loss">Loss</span>
+      <span class="chip chip-stakeholder" data-stakeholder="MTM">MTM</span>
+      <span class="chip chip-stakeholder" data-stakeholder="IT">IT</span>
+      <span class="chip chip-stakeholder" data-stakeholder="EO Local">EO Local</span>
+      <span class="chip chip-stakeholder" data-stakeholder="Logistica Reversa">Logística Reversa</span>
+      <span class="chip chip-stakeholder" data-stakeholder="H&B">H&B</span>
+    </div>
+  </div>
+  <div class="controls-row">
+    <span class="filter-label">Tipo de cambio:</span>
+    <div class="tipo-dropdown" id="tipo-dropdown">
+      <div class="tipo-trigger" id="tipo-trigger" onclick="toggleTipoPanel()">
+        <span class="tipo-trigger-icon" id="tipo-trigger-icon">📋</span>
+        <span class="tipo-trigger-label" id="tipo-trigger-label">Todos los tipos</span>
+        <span class="tipo-chevron">▼</span>
+      </div>
+      <div class="tipo-panel" id="tipo-panel">
+        <div class="tipo-panel-search">
+          <input type="text" id="tipo-search" placeholder="Buscar tipo..." oninput="filterTipoList(this.value)" autocomplete="off">
+        </div>
+        <div class="tipo-list" id="tipo-list">
+          <div class="tipo-no-results" id="tipo-no-results">Nenhum resultado</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="results-info" id="results-info"></div>
+
+<!-- GRID -->
+<div class="grid" id="grid">
+  <div class="empty" id="empty-state">
+    <div class="empty-icon">🔎</div>
+    <div class="empty-title">Nenhum resultado encontrado</div>
+    <div>Tente outros termos ou limpe os filtros.</div>
+  </div>
+</div>
+
+<!-- CARD MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    <div class="modal-header" id="modal-header"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- DIRECTORY MODAL -->
+<div class="dir-overlay" id="dir-overlay" onclick="closeDirModal(event)">
+  <div class="dir-modal" id="dir-modal">
+    <div class="dir-header">
+      <div class="dir-header-icon">👥</div>
+      <div>
+        <div class="dir-header-title">Directorio de Responsables</div>
+        <div class="dir-header-sub">Líderes y supervisores por área — actualiza los nombres con tu equipo</div>
+      </div>
+      <button class="modal-close" onclick="closeDirModalBtn()" style="position:static;margin-left:auto">✕</button>
+    </div>
+    <div class="dir-body" id="dir-body"></div>
+  </div>
+</div>
+
+<footer>
+  <strong>MercadoLibre</strong> · Matriz de Validación de Cambios · Uso interno — Operaciones
+</footer>
+
+<script>
+
+/* ─────────────────────────────────────────────────
+   DIRECTORIO DE RESPONSABLES
+   Edita los nombres, cargos y sites de cada área.
+   Si no tienes el nombre aún, deja el array vacío [].
+   Formato: { name, role, site, color }
+   Colors: blue (#3483FA), green (#00A650), orange (#F57C00),
+           red (#E53935), purple (#6B21A8), teal (#00796B)
+───────────────────────────────────────────────── */
+const DIRECTORY = {
+  "SHE/Safety": {
+    icon: "🦺",
+    label: "SHE / Safety",
+    people: [
+      { name: "Viviana Zuluaga",  role: "Focal SHE/Safety", color: "#E53935" },
+      { name: "Rogelio Lopez",    role: "Focal SHE/Safety", color: "#C62828" }
+    ]
+  },
+  "Loss": {
+    icon: "🔒",
+    label: "Loss Prevention",
+    people: [
+      { name: "Martin Chiesa",       role: "Focal Loss Prevention", color: "#263238" },
+      { name: "Jenifher Maldonado",  role: "Focal Loss Prevention", color: "#37474F" },
+      { name: "Paola Eunice Ruiz",   role: "Focal Loss Prevention", color: "#455A64" }
+    ]
+  },
+  "ICQA": {
+    icon: "✅",
+    label: "ICQA",
+    people: [
+      { name: "Ana Carla Tamarindo", role: "Focal ICQA", color: "#1565C0" },
+      { name: "Abraham Rodríguez",   role: "Focal ICQA", color: "#1976D2" }
+    ]
+  },
+  "MTM": {
+    icon: "⏱️",
+    label: "MTM",
+    people: [
+      { name: "Livia Campagnaro", role: "Focal MTM", color: "#E65100" },
+      { name: "Leticia Baetta",   role: "Focal MTM", color: "#BF360C" }
+    ]
+  },
+  "IT": {
+    icon: "💻",
+    label: "IT",
+    note: "El focal de IT debe ser buscado e indicado por el focal de PD en cada solicitud.",
+    people: []
+  },
+  "EO Local": {
+    icon: "📌",
+    label: "EO Local",
+    people: [
+      { name: "Andre Luiz Simoes",           role: "Focal EO Local", color: "#00695C" },
+      { name: "Manuela Del Giovannino",       role: "Focal EO Local", color: "#00796B" },
+      { name: "Agustin Ignacio Rojas",        role: "Focal EO Local", color: "#00897B" },
+      { name: "Deysenia Del Carmen Benavente",role: "Focal EO Local", color: "#009688" },
+      { name: "Cindy Hasbleidy",              role: "Focal EO Local", color: "#26A69A" },
+      { name: "Martha Anahy Sharpe",          role: "Focal EO Local", color: "#00695C" },
+      { name: "Daniela Castilleja",           role: "Focal EO Local", color: "#00796B" },
+      { name: "Jane Duarte Maranhão",         role: "Focal EO Local", color: "#00897B" },
+      { name: "Anderson dos Santos Barbosa",  role: "Focal EO Local", color: "#009688" },
+      { name: "Guilherme Franca dos Santos",  role: "Focal EO Local", color: "#26A69A" },
+      { name: "Thulio de Andrade Silva",      role: "Focal EO Local", color: "#00695C" },
+      { name: "Mariana Guadalupe Novoa",      role: "Focal EO Local", color: "#00796B" },
+      { name: "Steven Seedorf",              role: "Focal EO Local", color: "#00897B" }
+    ]
+  },
+  "Logistica Reversa": {
+    icon: "🔄",
+    label: "Logística Reversa",
+    people: [
+      { name: "Sole Marrari", role: "Focal Logística Reversa", color: "#4527A0" }
+    ]
+  },
+  "H&B": {
+    icon: "💊",
+    label: "H&B",
+    people: [
+      { name: "Maite Barbosa Campos", role: "Focal H&B", color: "#880E4F" }
+    ]
+  },
+  "PD Tribus": {
+    icon: "🤖",
+    label: "PD Tribus",
+    people: []
+  },
+  "CIC": {
+    icon: "🎯",
+    label: "CIC",
+    people: [
+      { name: "Alejandra Alvarez",     role: "Focal CIC", color: "#2968C8" },
+      { name: "Mario Clavero Santana", role: "Focal CIC", color: "#1565C0" },
+      { name: "Williams Riquelme",     role: "Focal CIC", color: "#1976D2" }
+    ]
+  },
+  "Mantenimiento": {
+    icon: "🔧",
+    label: "Mantenimiento",
+    people: [
+      { name: "Reynaldo Laureano",    role: "Focal Mantenimiento", color: "#37474F" },
+      { name: "Luciano Jeremias Paz", role: "Focal Mantenimiento", color: "#455A64" }
+    ]
+  }
+};
+
+/* ─────────────────────────────────────────────────
+   DADOS DOS TIPOS DE CAMBIO
+───────────────────────────────────────────────── */
+const DATA = [
+  { tipo: "Ergonomía", team: "PD", criteria: "Cambio en la altura de las mesas de trabajo, necesidad de agacharse, levantar peso.", mandatory: ["SHE/Safety"], informed: ["MTM"], icon: "🪑", color: "#FFF3E0", iconColor: "#E65100" },
+  { tipo: "Máquinas y Equipos", team: "MTM", criteria: "Introducción o cambio en el uso de montacargas, cintas transportadoras, transpaletas.", mandatory: ["SHE/Safety", "MTM", "ICQA"], informed: ["Mantenimiento"], icon: "⚙️", color: "#E3F2FD", iconColor: "#1565C0" },
+  { tipo: "EPP (Equipos de Protección Personal)", team: "PD", criteria: "Introducción o cambio en el uso de montacargas, cintas transportadoras, transpaletas.", mandatory: ["SHE/Safety"], informed: [], icon: "🦺", color: "#FCE4EC", iconColor: "#AD1457" },
+  { tipo: "Riesgos Físicos", team: "PD", criteria: "Trabajo en altura, riesgo de caída, circulación en áreas con tráfico de maquinaria.", mandatory: ["SHE/Safety"], informed: ["EO Local"], icon: "⚠️", color: "#FFF8E1", iconColor: "#F57F17" },
+  { tipo: "Productos Peligrosos", team: "PD", criteria: "Manejo de baterías, productos químicos, aerosol.", mandatory: ["SHE/Safety", "Loss"], informed: ["ICQA"], icon: "☣️", color: "#FFEBEE", iconColor: "#B71C1C" },
+  { tipo: "Insumos", team: "PD", criteria: "Cuando se requiere agregar un insumo que necesite una herramienta o manejo especial.", mandatory: ["SHE/Safety", "MTM"], informed: ["Logistica Reversa", "CIC", "ICQA"], icon: "📦", color: "#F3E5F5", iconColor: "#6A1B9A" },
+  { tipo: "Alto Valor", team: "PD", criteria: "Creación o cambio de proceso para productos de alto valor (electrónicos, etc.).", mandatory: ["Loss", "ICQA"], informed: ["EO Local"], icon: "💎", color: "#E8F5E9", iconColor: "#1B5E20" },
+  { tipo: "Acceso y Seguridad", team: "PD", criteria: "Cambios en el flujo de personas/productos en áreas restringidas (jaulas, docas).", mandatory: ["Loss", "SHE/Safety"], informed: ["IT"], icon: "🔒", color: "#ECEFF1", iconColor: "#263238" },
+  { tipo: "Divergencias y Pérdidas", team: "PD", criteria: "Proceso para tratar productos encontrados sin dueño (objetos perdidos) o dañados.", mandatory: ["Loss", "ICQA"], informed: ["Logistica Reversa", "EO Local"], icon: "📉", color: "#FFEBEE", iconColor: "#C62828" },
+  { tipo: "Precintos, Sellos y Cintas", team: "PD", criteria: "Procedimiento de sellado de camiones, cajas o jaulas.", mandatory: ["Loss"], informed: ["ICQA", "EO Local"], icon: "🔏", color: "#E0F7FA", iconColor: "#00695C" },
+  { tipo: "Procesos de destrucción, salvamento, clasificación", team: "PD", criteria: "Cuando hay necesidad de destrucción de productos, cambio en la clasificación de productos y criterios de salvados.", mandatory: ["Loss", "Logistica Reversa", "SHE/Safety"], informed: [], icon: "🗑️", color: "#FBE9E7", iconColor: "#BF360C" },
+  { tipo: "BPP", team: "PD", criteria: "Cuando hay un impacto en el KPI.", mandatory: ["Loss", "ICQA"], informed: [], icon: "📊", color: "#EDE7F6", iconColor: "#4527A0" },
+  { tipo: "Estándares de Calidad", team: "PD", criteria: "Cambios en los criterios de aceptación/rechazo de un producto o empaque y criterios de daños.", mandatory: ["ICQA", "Loss"], informed: ["EO Local"], icon: "✅", color: "#E8F5E9", iconColor: "#2E7D32" },
+  { tipo: "Acuracidad", team: "PD", criteria: "Procesos que garantizan la correspondencia entre el físico y el sistema.", mandatory: ["ICQA"], informed: [], icon: "🎯", color: "#E3F2FD", iconColor: "#1565C0" },
+  { tipo: "Control de Inventário", team: "PD", criteria: "Cambios en el proceso de conteo, verificación (recepción/expedición), inventario cíclico.", mandatory: ["ICQA", "Loss"], informed: ["Loss"], icon: "📋", color: "#E0F2F1", iconColor: "#004D40" },
+  { tipo: "Embalaje y Etiquetado", team: "PD", criteria: "Cambio en la forma de empacar, aplicar cintas o posicionar etiquetas que afectan la lectura o protección del producto.", mandatory: ["ICQA", "MTM", "Loss"], informed: [], icon: "🏷️", color: "#FFF3E0", iconColor: "#E65100" },
+  { tipo: "Problem Solver", team: "PD", criteria: "Seguimiento de paquetes (sistémico y físico), descontainerización, aduanas, auditoría de contenedor.", mandatory: ["ICQA", "Loss"], informed: ["Loss"], icon: "🔧", color: "#F1F8E9", iconColor: "#33691E" },
+  { tipo: "Tiempo y Movimiento", team: "MTM", criteria: "Cualquier cambio que tenga como objetivo aumentar o que pueda impactar la productividad (unidades por hora).", mandatory: ["MTM", "SHE/Safety", "H&B"], informed: ["EO Local"], icon: "⏱️", color: "#FFF3E0", iconColor: "#BF360C" },
+  { tipo: "Layout", team: "MTM", criteria: "Cambio en la disposición de estantes, mesas de trabajo, cintas o áreas de trabajo.", mandatory: ["MTM", "SHE/Safety", "H&B", "Loss"], informed: [], icon: "🗺️", color: "#E8EAF6", iconColor: "#283593" },
+  { tipo: "Flujo de Trabajo", team: "MTM", criteria: "Cambio en la secuencia de tareas para optimizar el recorrido o el tiempo.", mandatory: ["MTM", "SHE/Safety", "ICQA"], informed: [], icon: "🔄", color: "#E1F5FE", iconColor: "#01579B" },
+  { tipo: "Capacidad", team: "MTM", criteria: "Cambio que tiene como objetivo aumentar la capacidad de procesamiento de un área.", mandatory: ["MTM"], informed: ["ICQA", "EO Local", "SHE/Safety"], icon: "📈", color: "#E8F5E9", iconColor: "#1B5E20" },
+  { tipo: "Sistemas", team: "PD", criteria: "Cualquier paso que describa una interacción con una pantalla del sistema.", mandatory: ["IT"], informed: ["PD Tribus"], icon: "💻", color: "#E3F2FD", iconColor: "#1565C0" },
+  { tipo: "Hardware", team: "PD", criteria: "Cambio en la forma de usar escáneres, recolectores, impresoras u otros dispositivos.", mandatory: ["IT"], informed: ["PD Tribus"], icon: "🖨️", color: "#ECEFF1", iconColor: "#37474F" },
+  { tipo: "Automatización", team: "PD", criteria: "Interacción con cintas automáticas, clasificadores, etc.", mandatory: ["IT", "ICQA"], informed: ["SHE/Safety", "MTM"], icon: "🤖", color: "#E8EAF6", iconColor: "#311B92" },
+  { tipo: "Alcance del Trabajo", team: "PD", criteria: "Cambio que transfiere responsabilidad de un equipo a otro.", mandatory: ["EO Local"], informed: [], icon: "📌", color: "#FFF9C4", iconColor: "#F57F17" },
+  { tipo: "Alteración en procesos H&B", team: "PD", criteria: "Alteración en procesos de manejo y procesamiento de productos H&B.", mandatory: ["Logistica Reversa", "H&B", "MTM", "SHE/Safety"], informed: [], icon: "💊", color: "#FCE4EC", iconColor: "#880E4F" },
+  { tipo: "Desarrollo y validación de nuevos insumos y herramientas (MTM)", team: "MTM", criteria: "Cuando hay entrada de nuevos insumos y herramientas de MTM, cambios en procesos que impacten en el layout, espacio en el almacén o productividad operacional.", mandatory: ["MTM", "ICQA", "Logistica Reversa"], informed: ["SHE/Safety"], icon: "🛠️", color: "#FFF3E0", iconColor: "#E65100" }
+];
+
+/* ─────────────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────────────── */
+function getInitials(name) {
+  if (!name) return "?";
+  return name.split(" ").slice(0, 2).map(n => n[0]).join("").toUpperCase();
+}
+
+function renderResponsibleCards(areaKey, type) {
+  const area = DIRECTORY[areaKey];
+  const typeClass = type === "mandatory" ? "mandatory" : "informed";
+  const typeEmoji = type === "mandatory" ? "🔴" : "🔵";
+  const label = area ? area.label : areaKey;
+  const people = area ? area.people : [];
+  const note = area ? area.note : null;
+
+  let html = `<div class="stakeholder-group">
+    <span class="stakeholder-area-label ${typeClass}">${typeEmoji} ${label}</span>
+    <div class="responsible-cards">`;
+
+  if (note) {
+    html += `<div class="placeholder-card" style="background:#FFF8E1;border-color:#FFECB3;color:#6D4C41">ℹ️ ${note}</div>`;
+  } else if (people.length === 0) {
+    html += `<div class="placeholder-card">✏️ Responsable a completar — consultar directorio del equipo</div>`;
+  } else {
+    people.forEach(p => {
+      html += `
+        <div class="responsible-card">
+          <div class="responsible-avatar" style="background:${p.color}">${getInitials(p.name)}</div>
+          <div class="responsible-info">
+            <div class="responsible-name">${p.name}</div>
+            <div class="responsible-role">${p.role}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  html += `</div></div>`;
+  return html;
+}
+
+/* ─────────────────────────────────────────────────
+   MAIN MODAL
+───────────────────────────────────────────────── */
+let activeTeam = "all";
+let activeStakeholder = "all";
+let activeTipo = "all";
+let searchTerm = "";
+
+function buildTipoChips() {
+  const list = document.getElementById("tipo-list");
+  const noResults = document.getElementById("tipo-no-results");
+  const allItem = document.createElement("div");
+  allItem.className = "tipo-item active";
+  allItem.dataset.tipo = "all";
+  allItem.innerHTML = `<div class="tipo-item-icon" style="background:#F3F4F6">📋</div><span class="tipo-item-text">Todos los tipos</span><span class="tipo-item-check">✓</span>`;
+  allItem.onclick = () => selectTipo("all", "📋", "Todos los tipos", "#F3F4F6");
+  list.insertBefore(allItem, noResults);
+
+  DATA.forEach(item => {
+    const el = document.createElement("div");
+    el.className = "tipo-item";
+    el.dataset.tipo = item.tipo;
+    el.dataset.label = item.tipo.toLowerCase();
+    el.innerHTML = `<div class="tipo-item-icon" style="background:${item.color}">${item.icon}</div><span class="tipo-item-text">${item.tipo}</span><span class="tipo-item-check">✓</span>`;
+    el.onclick = () => selectTipo(item.tipo, item.icon, item.tipo, item.color);
+    list.insertBefore(el, noResults);
+  });
+}
+
+function toggleTipoPanel() {
+  const trigger = document.getElementById("tipo-trigger");
+  const panel = document.getElementById("tipo-panel");
+  const isOpen = panel.classList.contains("open");
+  if (isOpen) { closeTipoPanel(); }
+  else {
+    trigger.classList.add("open"); panel.classList.add("open");
+    document.getElementById("tipo-search").value = "";
+    filterTipoList("");
+    setTimeout(() => document.getElementById("tipo-search").focus(), 50);
+  }
+}
+
+function closeTipoPanel() {
+  document.getElementById("tipo-trigger").classList.remove("open");
+  document.getElementById("tipo-panel").classList.remove("open");
+}
+
+function selectTipo(tipo, icon, label, color) {
+  activeTipo = tipo;
+  document.getElementById("tipo-trigger-icon").textContent = icon;
+  document.getElementById("tipo-trigger-label").textContent = label;
+  const trigger = document.getElementById("tipo-trigger");
+  tipo === "all" ? trigger.classList.remove("has-value") : trigger.classList.add("has-value");
+  document.querySelectorAll("#tipo-list .tipo-item").forEach(el => el.classList.toggle("active", el.dataset.tipo === tipo));
+  closeTipoPanel();
+  renderCards();
+}
+
+function filterTipoList(term) {
+  const items = document.querySelectorAll("#tipo-list .tipo-item");
+  const norm = term.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  let anyVisible = false;
+  items.forEach(el => {
+    if (!el.dataset.label) { el.classList.remove("hidden"); return; }
+    const match = el.dataset.label.normalize("NFD").replace(/[̀-ͯ]/g, "").includes(norm);
+    el.classList.toggle("hidden", !match);
+    if (match) anyVisible = true;
+  });
+  document.getElementById("tipo-no-results").style.display = (!anyVisible && norm) ? "block" : "none";
+}
+
+function normalize(str) { return str.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+
+function renderCards() {
+  const grid = document.getElementById("grid");
+  grid.querySelectorAll(".card").forEach(c => c.remove());
+  let visible = 0;
+  const term = normalize(searchTerm);
+
+  DATA.forEach((item, idx) => {
+    const teamMatch = activeTeam === "all" || item.team === activeTeam;
+    const stakeholderMatch = activeStakeholder === "all" || item.mandatory.includes(activeStakeholder) || item.informed.includes(activeStakeholder);
+    const tipoMatch = activeTipo === "all" || item.tipo === activeTipo;
+    const allText = normalize([item.tipo, item.team, item.criteria, ...item.mandatory, ...item.informed].join(" "));
+    const searchMatch = !term || allText.includes(term);
+    if (!teamMatch || !stakeholderMatch || !tipoMatch || !searchMatch) return;
+
+    visible++;
+    const card = document.createElement("div");
+    card.className = "card";
+    card.onclick = () => openModal(idx);
+
+    const mandatoryBadges = item.mandatory.map(s => `<span class="badge badge-mandatory">🔴 ${s}</span>`).join("");
+    const informedBadges = item.informed.length
+      ? item.informed.map(s => `<span class="badge badge-informed">🔵 ${s}</span>`).join("")
+      : `<span class="badge badge-none">Nenhum</span>`;
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-icon" style="background:${item.color}; font-size:20px">${item.icon}</div>
+        <div class="card-title-wrap">
+          <div class="card-title">${item.tipo}</div>
+          <span class="card-team team-${item.team}">${item.team === "PD" ? "🔵" : "🟠"} ${item.team}</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="criteria">${item.criteria}</div>
+        <div class="section-mandatory">
+          <div class="section-label">🔴 Stakeholders obrigatórios</div>
+          <div class="badges">${mandatoryBadges}</div>
+        </div>
+        ${item.informed.length ? `<div class="section-informed" style="margin-top:10px"><div class="section-label" style="color:var(--blue)">🔵 Stakeholders informados</div><div class="badges">${informedBadges}</div></div>` : ""}
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  document.getElementById("stat-visible").textContent = visible;
+  document.getElementById("results-info").textContent = visible === DATA.length
+    ? `Mostrando todos os ${visible} tipos de cambio`
+    : `Mostrando ${visible} de ${DATA.length} tipos de cambio`;
+  document.getElementById("empty-state").classList.toggle("show", visible === 0);
+}
+
+function openModal(idx) {
+  const item = DATA[idx];
+  const overlay = document.getElementById("modal-overlay");
+
+  document.getElementById("modal-header").innerHTML = `
+    <div class="modal-icon" style="background:${item.color}">${item.icon}</div>
+    <div>
+      <div class="modal-title">${item.tipo}</div>
+      <span class="card-team team-${item.team}" style="font-size:12px">${item.team === "PD" ? "🔵" : "🟠"} Equipo gestor: ${item.team}</span>
+    </div>`;
+
+  // Responsáveis obrigatórios
+  let mandatoryHtml = item.mandatory.map(s => renderResponsibleCards(s, "mandatory")).join("");
+
+  // Responsáveis informados
+  let informedHtml = item.informed.length
+    ? item.informed.map(s => renderResponsibleCards(s, "informed")).join("")
+    : `<span style="color:var(--gray-500);font-size:13px;font-style:italic">Ninguno definido</span>`;
+
+  document.getElementById("modal-body").innerHTML = `
+    <div class="modal-section">
+      <div class="modal-section-title" style="color:var(--gray-500)">📋 Criterio de activación</div>
+      <div class="criteria-box">${item.criteria}</div>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-section">
+      <div class="modal-section-title" style="color:var(--red)">🔴 Stakeholders OBLIGATORIOS — Responsables</div>
+      ${mandatoryHtml}
+    </div>
+    <div class="modal-section" style="margin-top:4px">
+      <div class="modal-section-title" style="color:var(--blue)">🔵 Stakeholders INFORMADOS — Responsables</div>
+      ${informedHtml}
+    </div>
+    <div class="modal-divider"></div>
+    <div class="info-alert">
+      ⚠️ <span>Los stakeholders <strong>obligatorios</strong> deben ser accionados y dar su aprobación <em>antes</em> de cualquier ejecución del cambio. Los stakeholders <strong>informados</strong> deben ser notificados durante o após el proceso.</span>
+    </div>`;
+
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(e) { if (e.target === document.getElementById("modal-overlay")) closeModalBtn(); }
+function closeModalBtn() { document.getElementById("modal-overlay").classList.remove("open"); document.body.style.overflow = ""; }
+
+/* ─────────────────────────────────────────────────
+   DIRECTORY MODAL
+───────────────────────────────────────────────── */
+function openDirectory() {
+  const body = document.getElementById("dir-body");
+  const allEmpty = Object.values(DIRECTORY).every(a => a.people.length === 0);
+
+  let html = `<div class="dir-tip">
+    💡 <span>Este directorio muestra los responsables de cada área. Para agregar nombres, edita la variable <strong>DIRECTORY</strong> en el código HTML y completa los datos de cada equipo.</span>
+  </div>`;
+
+  Object.entries(DIRECTORY).forEach(([key, area]) => {
+    html += `<div class="dir-area">
+      <div class="dir-area-title"><span class="dir-area-icon">${area.icon}</span> ${area.label}</div>
+      <div class="dir-people">`;
+
+    if (area.note) {
+      html += `<div class="dir-empty" style="background:#FFF8E1;border-color:#FFECB3;color:#6D4C41">ℹ️ ${area.note}</div>`;
+    } else if (area.people.length === 0) {
+      html += `<div class="dir-empty">✏️ Sin responsables registrados — a completar</div>`;
+    } else {
+      area.people.forEach(p => {
+        html += `
+          <div class="dir-person-card">
+            <div class="dir-avatar" style="background:${p.color}">${getInitials(p.name)}</div>
+            <div class="dir-info">
+              <div class="dir-name">${p.name}</div>
+              <div class="dir-role">${p.role}</div>
+            </div>
+          </div>`;
+      });
+    }
+
+    html += `</div></div>`;
+  });
+
+  body.innerHTML = html;
+  document.getElementById("dir-overlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeDirModal(e) { if (e.target === document.getElementById("dir-overlay")) closeDirModalBtn(); }
+function closeDirModalBtn() { document.getElementById("dir-overlay").classList.remove("open"); document.body.style.overflow = ""; }
+
+/* ─────────────────────────────────────────────────
+   EVENTOS
+───────────────────────────────────────────────── */
+document.getElementById("search").addEventListener("input", e => { searchTerm = e.target.value; renderCards(); });
+document.getElementById("chips-team").addEventListener("click", e => {
+  if (!e.target.classList.contains("chip")) return;
+  document.querySelectorAll("#chips-team .chip").forEach(c => c.classList.remove("active"));
+  e.target.classList.add("active"); activeTeam = e.target.dataset.team; renderCards();
+});
+document.getElementById("chips-stakeholder").addEventListener("click", e => {
+  if (!e.target.classList.contains("chip")) return;
+  document.querySelectorAll("#chips-stakeholder .chip").forEach(c => c.classList.remove("active"));
+  e.target.classList.add("active"); activeStakeholder = e.target.dataset.stakeholder; renderCards();
+});
+document.addEventListener("click", e => {
+  const dropdown = document.getElementById("tipo-dropdown");
+  if (dropdown && !dropdown.contains(e.target)) closeTipoPanel();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModalBtn(); closeDirModalBtn(); } });
+
+buildTipoChips();
+renderCards();
+</script>
+</body>
+</html>
