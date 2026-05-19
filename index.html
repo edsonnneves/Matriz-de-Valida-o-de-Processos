@@ -378,8 +378,8 @@
 
 <!-- STATS -->
 <div class="stats-bar">
-  <div class="stat"><span class="stat-num" id="stat-total">27</span><span class="stat-label">tipos de cambio</span></div>
-  <div class="stat"><span class="stat-num" id="stat-visible">27</span><span class="stat-label">mostrados</span></div>
+  <div class="stat"><span class="stat-num" id="stat-total">26</span><span class="stat-label">tipos de cambio</span></div>
+  <div class="stat"><span class="stat-num" id="stat-visible">26</span><span class="stat-label">mostrados</span></div>
   <div class="stat"><span class="stat-num">9</span><span class="stat-label">equipos stakeholders</span></div>
   <div class="stat"><span class="stat-num">2</span><span class="stat-label">equipos gestores</span></div>
 </div>
@@ -470,282 +470,141 @@
 <script>
 
 /* ─────────────────────────────────────────────────
-   GOOGLE SHEETS — URLs de exportação CSV
-   As planilhas precisam estar com acesso
-   "Qualquer pessoa com o link pode ver"
+   DIRECTORIO DE RESPONSABLES
+   Edita los nombres, cargos y sites de cada área.
+   Si no tienes el nombre aún, deja el array vacío [].
+   Formato: { name, role, site, color }
+   Colors: blue (#3483FA), green (#00A650), orange (#F57C00),
+           red (#E53935), purple (#6B21A8), teal (#00796B)
 ───────────────────────────────────────────────── */
-const URL_FOCAIS  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1jbxGROAidO5N4Q6VCniL5G3JTxwwsj47G3sdwEJBn54QlCnY8MI_gCETibXhiFiy7XGv4tm2hDCB/pub?gid=0&single=true&output=csv";
-const URL_MATRIZ  = "https://docs.google.com/spreadsheets/d/2PACX-1vTtbe43G5DmbSHBaTSkDGcvfW7GBDYBayVSBVWryUud1fm_S42_ZBsVHMegslOeVBbT-6WUhQjkItqc/pub?gid=1959580397&single=true&output=csv";
-
-/* Cores fixas por área para os avatares */
-const AREA_COLORS = {
-  "SHE/Safety":       ["#E53935","#C62828","#B71C1C"],
-  "Loss":             ["#263238","#37474F","#455A64","#546E7A"],
-  "ICQA":             ["#1565C0","#1976D2","#1E88E5"],
-  "MTM":              ["#E65100","#BF360C","#D84315"],
-  "IT":               ["#6B21A8","#7B1FA2","#8E24AA"],
-  "EO Local":         ["#00695C","#00796B","#00897B","#009688","#26A69A"],
-  "Logistica Reversa":["#4527A0","#512DA8","#5E35B1"],
-  "H&B":              ["#880E4F","#AD1457","#C2185B"],
-  "PD Tribus":        ["#3483FA","#2968C8","#1E50A2"],
-  "CIC":              ["#2968C8","#1565C0","#1976D2"],
-  "Mantenimiento":    ["#37474F","#455A64","#546E7A"]
+const DIRECTORY = {
+  "SHE/Safety": {
+    icon: "🦺",
+    label: "SHE / Safety",
+    people: [
+      { name: "Viviana Zuluaga",  role: "Focal SHE/Safety", color: "#E53935" },
+      { name: "Rogelio Lopez",    role: "Focal SHE/Safety", color: "#C62828" }
+    ]
+  },
+  "Loss": {
+    icon: "🔒",
+    label: "Loss Prevention",
+    people: [
+      { name: "Martin Chiesa",       role: "Focal Loss Prevention", color: "#263238" },
+      { name: "Jenifher Maldonado",  role: "Focal Loss Prevention", color: "#37474F" },
+      { name: "Paola Eunice Ruiz",   role: "Focal Loss Prevention", color: "#455A64" }
+    ]
+  },
+  "ICQA": {
+    icon: "✅",
+    label: "ICQA",
+    people: [
+      { name: "Ana Carla Tamarindo", role: "Focal ICQA", color: "#1565C0" },
+      { name: "Abraham Rodríguez",   role: "Focal ICQA", color: "#1976D2" }
+    ]
+  },
+  "MTM": {
+    icon: "⏱️",
+    label: "MTM",
+    people: [
+      { name: "Leonardo Miranda Oliveira", role: "Focal MTM", color: "#E65100" },
+      { name: "Leticia Baetta",   role: "Focal MTM", color: "#BF360C" }
+    ]
+  },
+  "IT": {
+    icon: "💻",
+    label: "IT",
+    note: "El focal de IT debe ser buscado e indicado por el focal de PD en cada solicitud.",
+    people: []
+  },
+  "EO Local": {
+    icon: "📌",
+    label: "EO Local",
+    people: [
+      { name: "Andre Luiz Simoes",           role: "Focal EO Local", color: "#00695C" },
+      { name: "Manuela Del Giovannino",       role: "Focal EO Local", color: "#00796B" },
+      { name: "Agustin Ignacio Rojas",        role: "Focal EO Local", color: "#00897B" },
+      { name: "Deysenia Del Carmen Benavente",role: "Focal EO Local", color: "#009688" },
+      { name: "Cindy Hasbleidy",              role: "Focal EO Local", color: "#26A69A" },
+      { name: "Martha Anahy Sharpe",          role: "Focal EO Local", color: "#00695C" },
+      { name: "Daniela Castilleja",           role: "Focal EO Local", color: "#00796B" },
+      { name: "Jane Duarte Maranhão",         role: "Focal EO Local", color: "#00897B" },
+      { name: "Anderson dos Santos Barbosa",  role: "Focal EO Local", color: "#009688" },
+      { name: "Guilherme Franca dos Santos",  role: "Focal EO Local", color: "#26A69A" },
+      { name: "Thulio de Andrade Silva",      role: "Focal EO Local", color: "#00695C" },
+      { name: "Mariana Guadalupe Novoa",      role: "Focal EO Local", color: "#00796B" },
+      { name: "Steven Seedorf",              role: "Focal EO Local", color: "#00897B" }
+    ]
+  },
+  "Logistica Reversa": {
+    icon: "🔄",
+    label: "Logística Reversa",
+    people: [
+      { name: "Sole Marrari", role: "Focal Logística Reversa", color: "#4527A0" }
+    ]
+  },
+  "H&B": {
+    icon: "💊",
+    label: "H&B",
+    people: [
+      { name: "Maite Barbosa Campos", role: "Focal H&B", color: "#880E4F" }
+    ]
+  },
+  "PD Tribus": {
+    icon: "🤖",
+    label: "PD Tribus",
+    people: []
+  },
+  "CIC": {
+    icon: "🎯",
+    label: "CIC",
+    people: [
+      { name: "Alejandra Alvarez",     role: "Focal CIC", color: "#2968C8" },
+      { name: "Mario Clavero Santana", role: "Focal CIC", color: "#1565C0" },
+      { name: "Williams Riquelme",     role: "Focal CIC", color: "#1976D2" }
+    ]
+  },
+  "Mantenimiento": {
+    icon: "🔧",
+    label: "Mantenimiento",
+    people: [
+      { name: "Reynaldo Laureano",    role: "Focal Mantenimiento", color: "#37474F" },
+      { name: "Luciano Jeremias Paz", role: "Focal Mantenimiento", color: "#455A64" }
+    ]
+  }
 };
 
-function getAreaColor(area, idx) {
-  const colors = AREA_COLORS[area] || ["#3483FA"];
-  return colors[idx % colors.length];
-}
-
-/* ─── PARSE CSV helper ─── */
-function parseCSV(text) {
-  const lines = text.trim().split(/\r?\n/);
-  const headers = splitCSVLine(lines[0]);
-  return lines.slice(1).map(line => {
-    const vals = splitCSVLine(line);
-    const obj = {};
-    headers.forEach((h, i) => obj[h.trim()] = (vals[i] || "").trim());
-    return obj;
-  }).filter(r => Object.values(r).some(v => v));
-}
-
-function splitCSVLine(line) {
-  const result = [];
-  let cur = "", inQ = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') { inQ = !inQ; }
-    else if (ch === ',' && !inQ) { result.push(cur); cur = ""; }
-    else cur += ch;
-  }
-  result.push(cur);
-  return result;
-}
-
-/* ─── BUILD DIRECTORY from Focais sheet ───
-   Formato da planilha: cada coluna = um equipe
-   Linha 1: cabeçalho "EQUIPOS" (ignorado)
-   Linha 2: nomes dos equipes (She/Safety, Loss Prevetion, ICQA...)
-   Linhas 3+: nomes das pessoas em cada coluna
-─────────────────────────────────────────── */
-function buildDirectory(rows) {
-  const dir = {};
-  if (!rows.length) return dir;
-
-  // Linha 1 pode ser "EQUIPOS" - pegar os headers que são os nomes dos equipes
-  // Papa não é usado aqui, parseCSV retorna objetos com headers da linha 1
-  // Mas a linha 1 pode ter "EQUIPOS" como merge - precisamos pegar linha 2 como headers
-  // Na prática, parseCSV usa a primeira linha como header.
-  // Se a primeira linha for "EQUIPOS,,,..." então os headers serão "EQUIPOS","","","" etc.
-  // Nesse caso os nomes dos equipes estão na primeira ROW de dados.
-
-  // Detectar qual linha tem os nomes dos equipes
-  const firstRow = rows[0];
-  const keys = Object.keys(firstRow);
-
-  // Checar se o header já são os nomes dos equipes (ex: "She/Safety")
-  // ou se a primeira linha de dados é o cabeçalho real
-  const headerIsTeam = keys.some(k =>
-    k.toLowerCase().includes("safety") ||
-    k.toLowerCase().includes("loss") ||
-    k.toLowerCase().includes("icqa") ||
-    k.toLowerCase().includes("mtm") ||
-    k.toLowerCase().includes("eo local")
-  );
-
-  let teamNames, peopleRows;
-  if (headerIsTeam) {
-    // Headers já são os nomes dos equipes
-    teamNames  = keys;
-    peopleRows = rows;
-  } else {
-    // Primeira linha de dados contém os nomes dos equipes
-    teamNames  = keys.map(k => firstRow[k]).filter(Boolean);
-    peopleRows = rows.slice(1);
-    // Rebuild as object using teamNames as keys
-    peopleRows = peopleRows.map(r => {
-      const obj = {};
-      keys.forEach((k, i) => { if (teamNames[i]) obj[teamNames[i]] = r[k]; });
-      return obj;
-    });
-  }
-
-  const AREA_META = {
-    "She/Safety":         { key: "SHE/Safety",        icon: "🦺", label: "SHE / Safety" },
-    "SHE/Safety":         { key: "SHE/Safety",        icon: "🦺", label: "SHE / Safety" },
-    "Loss Prevetion":     { key: "Loss",               icon: "🔒", label: "Loss Prevention" },
-    "Loss Prevention":    { key: "Loss",               icon: "🔒", label: "Loss Prevention" },
-    "Loss":               { key: "Loss",               icon: "🔒", label: "Loss Prevention" },
-    "ICQA":               { key: "ICQA",               icon: "✅", label: "ICQA" },
-    "MTM":                { key: "MTM",                icon: "⏱️", label: "MTM" },
-    "IT":                 { key: "IT",                 icon: "💻", label: "IT", note: "El focal de IT debe ser indicado por el focal de PD en cada solicitud." },
-    "EO Local":           { key: "EO Local",           icon: "📌", label: "EO Local" },
-    "Logistica Reversa":  { key: "Logistica Reversa",  icon: "🔄", label: "Logística Reversa" },
-    "Logística Reversa":  { key: "Logistica Reversa",  icon: "🔄", label: "Logística Reversa" },
-    "H&B":                { key: "H&B",                icon: "💊", label: "H&B" },
-    "PD Tribus":          { key: "PD Tribus",          icon: "🤖", label: "PD Tribus" },
-    "CIC":                { key: "CIC",                icon: "🎯", label: "CIC" },
-    "Mantenimiento":      { key: "Mantenimiento",      icon: "🔧", label: "Mantenimiento" }
-  };
-
-  teamNames.forEach(colName => {
-    const meta = AREA_META[colName] || { key: colName, icon: "👤", label: colName };
-    const key  = meta.key;
-    if (!dir[key]) {
-      dir[key] = { icon: meta.icon, label: meta.label, people: [] };
-      if (meta.note) dir[key].note = meta.note;
-    }
-    peopleRows.forEach(r => {
-      const name = (r[colName] || "").trim();
-      if (!name) return;
-      // Skip header-like values
-      if (name.toLowerCase() === colName.toLowerCase()) return;
-      if (name.toLowerCase().includes("indicar") || name.toLowerCase().includes("focal de pd")) return;
-      dir[key].people.push({
-        name,
-        role: `Focal ${meta.label}`,
-        color: getAreaColor(key, dir[key].people.length)
-      });
-    });
-  });
-
-  return dir;
-}
-
-/* ─── BUILD DATA from Matriz sheet ─── */
-/* Paleta de cores automática para os cards */
-const CARD_COLORS = [
-  "#FFF3E0","#E3F2FD","#FCE4EC","#FFF8E1","#FFEBEE","#F3E5F5",
-  "#E8F5E9","#ECEFF1","#E0F7FA","#FBE9E7","#EDE7F6","#E8EAF6",
-  "#E1F5FE","#E8F5E9","#E0F2F1","#FFF9C4","#F1F8E9","#E3F2FD"
+/* ─────────────────────────────────────────────────
+   DADOS DOS TIPOS DE CAMBIO
+───────────────────────────────────────────────── */
+const DATA = [
+  { tipo: "Ergonomía", team: "PD", criteria: "Cambio en la altura de las mesas de trabajo, necesidad de agacharse, levantar peso.", mandatory: ["SHE/Safety"], informed: ["MTM"], icon: "🪑", color: "#FFF3E0", iconColor: "#E65100" },
+  { tipo: "Máquinas y Equipos", team: "MTM", criteria: "Introducción o cambio en el uso de montacargas, cintas transportadoras, transpaletas.", mandatory: ["SHE/Safety", "MTM", "ICQA"], informed: ["Mantenimiento"], icon: "⚙️", color: "#E3F2FD", iconColor: "#1565C0" },
+  { tipo: "EPP (Equipos de Protección Personal)", team: "PD", criteria: "Introducción o cambio en el uso de montacargas, cintas transportadoras, transpaletas.", mandatory: ["SHE/Safety"], informed: [], icon: "🦺", color: "#FCE4EC", iconColor: "#AD1457" },
+  { tipo: "Riesgos Físicos", team: "PD", criteria: "Trabajo en altura, riesgo de caída, circulación en áreas con tráfico de maquinaria.", mandatory: ["SHE/Safety"], informed: ["EO Local"], icon: "⚠️", color: "#FFF8E1", iconColor: "#F57F17" },
+  { tipo: "Productos Peligrosos", team: "PD", criteria: "Manejo de baterías, productos químicos, aerosol.", mandatory: ["SHE/Safety", "Loss"], informed: ["ICQA"], icon: "☣️", color: "#FFEBEE", iconColor: "#B71C1C" },
+  { tipo: "Alto Valor", team: "PD", criteria: "Creación o cambio de proceso para productos de alto valor (electrónicos, etc.).", mandatory: ["Loss", "ICQA"], informed: ["EO Local"], icon: "💎", color: "#E8F5E9", iconColor: "#1B5E20" },
+  { tipo: "Acceso y Seguridad", team: "PD", criteria: "Cambios en el flujo de personas/productos en áreas restringidas (jaulas, docas).", mandatory: ["Loss", "SHE/Safety"], informed: ["IT"], icon: "🔒", color: "#ECEFF1", iconColor: "#263238" },
+  { tipo: "Divergencias y Pérdidas", team: "PD", criteria: "Proceso para tratar productos encontrados sin dueño (objetos perdidos) o dañados.", mandatory: ["Loss", "ICQA"], informed: ["Logistica Reversa", "EO Local"], icon: "📉", color: "#FFEBEE", iconColor: "#C62828" },
+  { tipo: "Precintos, Sellos y Cintas", team: "PD", criteria: "Procedimiento de sellado de camiones, cajas o jaulas.", mandatory: ["Loss"], informed: ["ICQA", "EO Local"], icon: "🔏", color: "#E0F7FA", iconColor: "#00695C" },
+  { tipo: "Procesos de destrucción, salvamento, clasificación", team: "PD", criteria: "Cuando hay necesidad de destrucción de productos, cambio en la clasificación de productos y criterios de salvados.", mandatory: ["Loss", "Logistica Reversa", "SHE/Safety"], informed: [], icon: "🗑️", color: "#FBE9E7", iconColor: "#BF360C" },
+  { tipo: "BPP", team: "PD", criteria: "Cuando hay un impacto en el KPI.", mandatory: ["Loss", "ICQA"], informed: [], icon: "📊", color: "#EDE7F6", iconColor: "#4527A0" },
+  { tipo: "Estándares de Calidad", team: "PD", criteria: "Cambios en los criterios de aceptación/rechazo de un producto o empaque y criterios de daños.", mandatory: ["ICQA", "Loss"], informed: ["EO Local"], icon: "✅", color: "#E8F5E9", iconColor: "#2E7D32" },
+  { tipo: "Acuracidad", team: "PD", criteria: "Procesos que garantizan la correspondencia entre el físico y el sistema.", mandatory: ["ICQA"], informed: [], icon: "🎯", color: "#E3F2FD", iconColor: "#1565C0" },
+  { tipo: "Control de Inventário", team: "PD", criteria: "Cambios en el proceso de conteo, verificación (recepción/expedición), inventario cíclico.", mandatory: ["ICQA", "Loss"], informed: ["Loss"], icon: "📋", color: "#E0F2F1", iconColor: "#004D40" },
+  { tipo: "Embalaje y Etiquetado", team: "PD", criteria: "Cambio en la forma de empacar, aplicar cintas o posicionar etiquetas que afectan la lectura o protección del producto.", mandatory: ["ICQA", "MTM", "Loss"], informed: [], icon: "🏷️", color: "#FFF3E0", iconColor: "#E65100" },
+  { tipo: "Problem Solver", team: "PD", criteria: "Seguimiento de paquetes (sistémico y físico), descontainerización, aduanas, auditoría de contenedor.", mandatory: ["ICQA", "Loss"], informed: ["Loss"], icon: "🔧", color: "#F1F8E9", iconColor: "#33691E" },
+  { tipo: "Tiempo y Movimiento", team: "MTM", criteria: "Cualquier cambio que tenga como objetivo aumentar o que pueda impactar la productividad (unidades por hora).", mandatory: ["MTM", "SHE/Safety", "H&B"], informed: ["EO Local"], icon: "⏱️", color: "#FFF3E0", iconColor: "#BF360C" },
+  { tipo: "Layout", team: "PD", criteria: "Cambio en la disposición de estantes, mesas de trabajo, cintas o áreas de trabajo.", mandatory: ["MTM", "SHE/Safety", "H&B", "Loss"], informed: [], icon: "🗺️", color: "#E8EAF6", iconColor: "#283593" },
+  { tipo: "Flujo de Trabajo", team: "PD", criteria: "Cambio en la secuencia de tareas para optimizar el recorrido o el tiempo.", mandatory: ["MTM", "SHE/Safety", "ICQA"], informed: [], icon: "🔄", color: "#E1F5FE", iconColor: "#01579B" },
+  { tipo: "Capacidad", team: "PD", criteria: "Cambio que tiene como objetivo aumentar la capacidad de procesamiento de un área.", mandatory: ["MTM"], informed: ["ICQA", "EO Local", "SHE/Safety"], icon: "📈", color: "#E8F5E9", iconColor: "#1B5E20" },
+  { tipo: "Sistemas", team: "PD", criteria: "Cualquier paso que describa una interacción con una pantalla del sistema.", mandatory: ["IT"], informed: ["PD Tribus"], icon: "💻", color: "#E3F2FD", iconColor: "#1565C0" },
+  { tipo: "Hardware", team: "PD", criteria: "Cambio en la forma de usar escáneres, recolectores, impresoras u otros dispositivos.", mandatory: ["IT"], informed: ["PD Tribus"], icon: "🖨️", color: "#ECEFF1", iconColor: "#37474F" },
+  { tipo: "Automatización", team: "PD", criteria: "Interacción con cintas automáticas, clasificadores, etc.", mandatory: ["IT", "ICQA"], informed: ["SHE/Safety", "MTM"], icon: "🤖", color: "#E8EAF6", iconColor: "#311B92" },
+  { tipo: "Alcance del Trabajo", team: "PD", criteria: "Cambio que transfiere responsabilidad de un equipo a otro.", mandatory: ["EO Local"], informed: [], icon: "📌", color: "#FFF9C4", iconColor: "#F57F17" },
+  { tipo: "Alteración en procesos H&B", team: "PD", criteria: "Alteración en procesos de manejo y procesamiento de productos H&B.", mandatory: ["Logistica Reversa", "H&B", "MTM", "SHE/Safety"], informed: [], icon: "💊", color: "#FCE4EC", iconColor: "#880E4F" },
+  { tipo: "Gestión de insumos y equipamentos operacionales (MTM)", team: "MTM", criteria: "Cuando el equipo MTM necesita elaborar, gestionar, modificar o validar insumos nuevos o existentes y equipamentos operacionales (tales como esteiras, baker carts, carrinhos de feira, entre otros), o cuando estos cambios generan impacto en el layout, espacio en el almacén o productividad operacional.", mandatory: ["MTM", "ICQA", "Logistica Reversa"], informed: ["SHE/Safety"], icon: "🛠️", color: "#FFF3E0", iconColor: "#E65100" }
 ];
-const CARD_ICON_COLORS = [
-  "#E65100","#1565C0","#AD1457","#F57F17","#B71C1C","#6A1B9A",
-  "#1B5E20","#263238","#00695C","#BF360C","#4527A0","#283593",
-  "#01579B","#2E7D32","#004D40","#F57F17","#33691E","#1565C0"
-];
-const TIPO_ICONS = {
-  "ergon":"🪑","máquina":"⚙️","epp":"🦺","riesgo":"⚠️","peligro":"☣️",
-  "insumo":"📦","alto valor":"💎","acceso":"🔒","divergen":"📉",
-  "precinto":"🔏","destrucción":"🗑️","bpp":"📊","calidad":"✅",
-  "acurac":"🎯","inventar":"📋","embala":"🏷️","problem":"🔧",
-  "tiempo":"⏱️","layout":"🗺️","flujo":"🔄","capacidad":"📈",
-  "sistema":"💻","hardware":"🖨️","automati":"🤖","alcance":"📌",
-  "h&b":"💊","desarroll":"🛠️","alterac":"💊"
-};
-function getCardIcon(tipo) {
-  const t = (tipo||"").toLowerCase();
-  for (const [k,v] of Object.entries(TIPO_ICONS)) { if (t.includes(k)) return v; }
-  return "📋";
-}
-
-function buildData(rows) {
-  return rows.map((r, idx) => {
-    // Exact column names from spreadsheet
-    const tipo     = r["Tipo de Cambio"] || r["Tipo"] || "";
-    const team     = r["Equipo responsable por gestionar"] || r["Team"] || "PD";
-    const criteria = r["Critério para involucrar"] || r["Criterio para involucrar"] || r["Critério"] || "";
-    // Stakeholders come as comma-separated values in single cells
-    const mandatory = (r["STAKEHOLDER OBLIGATORIO"] || r["Obligatorios"] || "")
-      .split(/[;,]/).map(s => s.trim()).filter(Boolean);
-    const informed  = (r["STAKEHOLDER INFORMADO"] || r["Informados"] || "")
-      .split(/[;,]/).map(s => s.trim()).filter(Boolean);
-    return {
-      tipo,
-      team: team.trim(),
-      criteria,
-      mandatory,
-      informed,
-      icon:      getCardIcon(tipo),
-      color:     CARD_COLORS[idx % CARD_COLORS.length],
-      iconColor: CARD_ICON_COLORS[idx % CARD_ICON_COLORS.length]
-    };
-  }).filter(d => d.tipo);
-}
-
-/* ─── LOADING STATE ─── */
-function showLoading() {
-  document.getElementById("grid").innerHTML = `
-    <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray-500)">
-      <div style="font-size:36px;margin-bottom:12px">⏳</div>
-      <div style="font-size:16px;font-weight:600;margin-bottom:6px">Carregando dados...</div>
-      <div style="font-size:13px">Buscando dados do Google Sheets</div>
-    </div>`;
-}
-
-function showError(msg) {
-  document.getElementById("grid").innerHTML = `
-    <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray-500)">
-      <div style="font-size:36px;margin-bottom:12px">⚠️</div>
-      <div style="font-size:16px;font-weight:600;color:#E53935;margin-bottom:8px">Erro ao carregar dados</div>
-      <div style="font-size:13px;max-width:480px;margin:0 auto;line-height:1.6">${msg}</div>
-      <button onclick="loadSheets()" style="margin-top:18px;padding:10px 22px;background:var(--blue);color:white;border:none;border-radius:20px;cursor:pointer;font-size:14px;font-weight:600">↻ Tentar novamente</button>
-    </div>`;
-}
-
-/* ─── MAIN LOAD FUNCTION ─── */
-let DIRECTORY = {};
-let DATA = [];
-
-async function loadSheets() {
-  showLoading();
-  try {
-    const [resFocais, resMatriz] = await Promise.all([
-      fetch(URL_FOCAIS),
-      fetch(URL_MATRIZ)
-    ]);
-
-    if (!resFocais.ok || !resMatriz.ok) throw new Error("Falha ao buscar planilhas. Verifique se estão públicas.");
-
-    const [textFocais, textMatriz] = await Promise.all([
-      resFocais.text(),
-      resMatriz.text()
-    ]);
-
-    const rowsFocais = parseCSV(textFocais);
-    const rowsMatriz = parseCSV(textMatriz);
-
-    DIRECTORY = buildDirectory(rowsFocais);
-    DATA       = buildData(rowsMatriz);
-
-    // Update stats
-    document.getElementById("stat-total").textContent   = DATA.length;
-    document.getElementById("stat-visible").textContent = DATA.length;
-
-    // Rebuild chips
-    buildStakeholderChips();
-    buildTipoChips();
-    renderCards();
-
-    // Show last updated time
-    const now = new Date();
-    document.getElementById("last-updated").textContent =
-      `Atualizado: ${now.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}`;
-
-  } catch(err) {
-    console.error(err);
-    showError(`${err.message}<br><br>Certifique-se de que as planilhas estão com acesso <strong>"Qualquer pessoa com o link pode ver"</strong> e publicadas na web.`);
-  }
-}
-
-function buildStakeholderChips() {
-  const stakeholders = new Set();
-  DATA.forEach(d => {
-    d.mandatory.forEach(s => stakeholders.add(s));
-    d.informed.forEach(s => stakeholders.add(s));
-  });
-  const container = document.getElementById("chips-stakeholder");
-  container.innerHTML = `<span class="chip chip-stakeholder active" data-stakeholder="all">Todos</span>`;
-  [...stakeholders].sort().forEach(s => {
-    const chip = document.createElement("span");
-    chip.className = "chip chip-stakeholder";
-    chip.dataset.stakeholder = s;
-    chip.textContent = s;
-    container.appendChild(chip);
-  });
-}
-
-/* DIRECTORY e DATA carregados dinamicamente via loadSheets() */
 
 /* ─────────────────────────────────────────────────
    HELPERS
@@ -1020,7 +879,8 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModalBtn(); closeDirModalBtn(); } });
 
-loadSheets();
+buildTipoChips();
+renderCards();
 </script>
 </body>
 </html>
